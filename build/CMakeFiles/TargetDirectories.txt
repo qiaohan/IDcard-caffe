@@ -1,0 +1,3 @@
+/home/hzqiaohan/OCR/IDcardRecognize/master/build/CMakeFiles/rebuild_cache.dir
+/home/hzqiaohan/OCR/IDcardRecognize/master/build/CMakeFiles/edit_cache.dir
+/home/hzqiaohan/OCR/IDcardRecognize/master/build/CMakeFiles/IDrec.dir

@@ -1,0 +1,162 @@
+name: "GoogleNet"
+input: "data"
+input_dim: 1
+input_dim: 3
+input_dim: 192
+input_dim: 64
+
+
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1"
+  param { lr_mult: 1 decay_mult: 1 }
+  param { lr_mult: 2 decay_mult: 0 }
+#  blobs_lr: 1
+#  blobs_lr: 2
+#  weight_decay: 1
+#  weight_decay: 0
+  convolution_param {
+    num_output: 16
+    kernel_size: 7
+    stride: 2
+    pad: 0
+    weight_filler {
+      type: "gaussian"
+      std: 0.015
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu1"
+  type: "ReLU"
+  bottom: "conv1"
+  top: "conv1"
+}
+layer {
+  name: "pool1"
+  type: "Pooling"
+  bottom: "conv1"
+  top: "pool1"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+    pad: 0
+  }
+}
+
+
+layer {
+  name: "conv2"
+  type: "Convolution"
+  bottom: "pool1"
+  top: "conv2"
+  param { lr_mult: 1 decay_mult: 1 }
+  param { lr_mult: 2 decay_mult: 0 }
+#  blobs_lr: 1
+#  blobs_lr: 2
+#  weight_decay: 1
+#  weight_decay: 0
+  convolution_param {
+    num_output: 32
+    pad: 1
+    kernel_size: 3
+    group: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.02
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu2"
+  type: "ReLU"
+  bottom: "conv2"
+  top: "conv2"
+}
+
+layer {
+  name: "pool2"
+  type: "Pooling"
+  bottom: "conv2"
+  top: "pool2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+    pad: 0
+  }
+}
+
+# classification branch
+
+layer {
+  name: "cls3_reduction"
+  type: "Convolution"
+  bottom: "pool2"
+  top: "cls3_reduction"
+  param { lr_mult: 1 decay_mult: 1 }
+  param { lr_mult: 2 decay_mult: 0 }
+#  blobs_lr: 1
+#  blobs_lr: 2
+#  weight_decay: 1
+#  weight_decay: 0
+  convolution_param {
+    num_output: 64
+    pad: 0
+    kernel_size: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "relu_cls3_reduction"
+  type: "ReLU"
+  bottom: "cls3_reduction"
+  top: "cls3_reduction"
+}
+
+layer {
+  name: "cls3_fc2"
+  type: "InnerProduct"
+  bottom: "cls3_reduction"
+  top: "cls3_fc2"
+  param { lr_mult: 1 decay_mult: 1 }
+  param { lr_mult: 2 decay_mult: 0 }
+#  blobs_lr: 1
+#  blobs_lr: 2
+#  weight_decay: 1
+#  weight_decay: 0
+  inner_product_param {
+    num_output: 4
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+	name: "prob"
+	type: "Softmax"
+	bottom: "cls3_fc2"
+	top: "prob"
+}
